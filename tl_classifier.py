@@ -27,7 +27,7 @@ cwd = os.path.dirname(os.path.realpath(__file__))
 class TLClassifier(object):
     def __init__(self):
 
-        self.signal_classes = ['Red', 'Yellow', 'Green']
+        self.signal_classes = ['Red', 'Green', 'Yellow']
        # self.signal_status = TrafficLight.UNKNOWN
         self.signal_status = None
         
