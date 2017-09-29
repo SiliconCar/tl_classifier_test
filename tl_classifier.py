@@ -112,9 +112,21 @@ class TLClassifier(object):
     
               cls = classes.tolist()
               # Find the first occurence of traffic light detection id=10
-              idx = next(i for i, v in enumerate(cls) if v == 10.)
-              dim = image.shape[0:2]
-              box = self.box_normal_to_pixel(boxes[idx], dim)
+              idx = next((i for i, v in enumerate(cls) if v == 10.), None)
+              # If there is no detection
+              if idx == None:
+                  box=[0, 0, 0, 0]
+                  print('no detection!')
+              # If the confidence of detection is too slow    
+              elif scores[idx]<=0.1:
+                  box=[0, 0, 0, 0]
+                  print('low confidence')
+              #If there is a detection and its confidence is high enough    
+              else:
+                  dim = image.shape[0:2]
+                  box = self.box_normal_to_pixel(boxes[idx], dim)
+                  print(box)
+                  print('localization confidence: ', scores[idx])
               self.tl_box = box
              
         return box
@@ -167,9 +179,13 @@ if __name__ == '__main__':
             end = time.time()
             print('Localization time: ', end-start)
             start = time.time()
-            img_np = cv2.resize(img_full_np_copy[b[0]:b[2], b[1]:b[3]], (32, 32)) 
-            tl_cls.get_classification(img_np)
-            end = time.time()
-            print(tl_cls.signal_status)
+            # If there is no detection or low-confidence detection
+            if np.array_equal(b, np.zeros(4)):
+               print ('unknown')
+            else:    
+               img_np = cv2.resize(img_full_np_copy[b[0]:b[2], b[1]:b[3]], (32, 32)) 
+               tl_cls.get_classification(img_np)
+               print(tl_cls.signal_status)
+            end = time.time()   
             print('Classification time: ', end-start)
              
